@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICU Rounds Checklist (FASTHUGSBID)</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
+        h2 { text-align: center; }
+        .checklist-item { display: flex; align-items: center; margin: 10px 0; }
+        .checklist-item input { margin-right: 10px; }
+        textarea { width: 100%; height: 50px; margin-top: 5px; }
+        .reset-btn { display: block; margin: 20px auto; padding: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h2>ICU Rounds Checklist (FASTHUGSBID)</h2>
+    
+    <div id="checklist"></div>
+    
+    <button class="reset-btn" onclick="resetChecklist()">Reset Checklist</button>
+
+    <script>
+        const checklistItems = [
+            "Feeding", "Analgesia", "Sedation", "Thromboprophylaxis", "Head up (positioning)", 
+            "Ulcer prophylaxis", "Glycemic control", "Spontaneous breathing trial", 
+            "Bowel care", "Indwelling catheter removal", "De-escalation of antibiotics"
+        ];
+
+        function loadChecklist() {
+            const checklistContainer = document.getElementById("checklist");
+            checklistContainer.innerHTML = ""; 
+
+            checklistItems.forEach((item, index) => {
+                const isChecked = localStorage.getItem(`check_${index}`) === "true";
+                const savedNote = localStorage.getItem(`note_${index}`) || "";
+
+                const checklistItem = document.createElement("div");
+                checklistItem.className = "checklist-item";
+
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.checked = isChecked;
+                checkbox.onchange = () => {
+                    localStorage.setItem(`check_${index}`, checkbox.checked);
+                };
+
+                const label = document.createElement("label");
+                label.textContent = item;
+
+                const note = document.createElement("textarea");
+                note.placeholder = "Notes...";
+                note.value = savedNote;
+                note.oninput = () => {
+                    localStorage.setItem(`note_${index}`, note.value);
+                };
+
+                checklistItem.appendChild(checkbox);
+                checklistItem.appendChild(label);
+                checklistContainer.appendChild(checklistItem);
+                checklistContainer.appendChild(note);
+            });
+        }
+
+        function resetChecklist() {
+            checklistItems.forEach((_, index) => {
+                localStorage.removeItem(`check_${index}`);
+                localStorage.removeItem(`note_${index}`);
+            });
+            loadChecklist();
+        }
+
+        document.addEventListener("DOMContentLoaded", loadChecklist);
+    </script>
+
+</body>
+</html>
